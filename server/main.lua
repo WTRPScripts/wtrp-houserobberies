@@ -70,12 +70,12 @@ RegisterNetEvent('wtrp-houserobbery:server:searchCabin', function(cabin, house)
             local randomItem = Config.Rewards[Tier][Config.Houses[house]["furniture"][cabin]["type"]][math.random(1, #Config.Rewards[Tier][Config.Houses[house]["furniture"][cabin]["type"]])]
             local itemInfo = QBCore.Shared.Items[randomItem]
             if math.random(1, 100) == 69 then
-                randomItem = "houselaptop"
+                randomItem = "usb_house"
                 itemInfo = QBCore.Shared.Items[randomItem]
                 Player.Functions.AddItem(randomItem, 1)
                 TriggerClientEvent('inventory:client:ItemBox', src, itemInfo, "add")
             elseif math.random(1, 100) == 35 then
-                randomItem = "mansionlaptop"
+                randomItem = "laptop_hack"
                 itemInfo = QBCore.Shared.Items[randomItem]
                 Player.Functions.AddItem(randomItem, 1)
                 TriggerClientEvent('inventory:client:ItemBox', src, itemInfo, "add")
@@ -140,7 +140,7 @@ RegisterNetEvent('wtrp-houserobbery:server:removeLockpick', function(source)
 end)
 
 
-QBCore.Functions.CreateUseableItem("houselaptop", function(source)
+QBCore.Functions.CreateUseableItem("usb_house", function(source)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
      if  TriggerClientEvent("wtrp-houserobbery:client:househacking", src) then
@@ -151,12 +151,12 @@ end)
 RegisterNetEvent('wtrp-houserobbery:server:removehousehacking', function(source)
     local Player = QBCore.Functions.GetPlayer(source)
     local src = source
-   if Player.Functions.RemoveItem('houselaptop', 1) then
+   if Player.Functions.RemoveItem('usb_house', 1) then
 		TriggerClientEvent('QBCore:Notify', src, "You Lost Your House Hacking Laptop", 'error')
 	end
 end)
 
-QBCore.Functions.CreateUseableItem("mansionlaptop", function(source)
+QBCore.Functions.CreateUseableItem("laptop_hack", function(source)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
 	
@@ -168,7 +168,7 @@ end)
 RegisterNetEvent('wtrp-houserobbery:server:removemansionhacking', function()
     local Player = QBCore.Functions.GetPlayer(source)
     local src = source
-   if Player.Functions.RemoveItem('mansionlaptop', 1) then
+   if Player.Functions.RemoveItem('laptop_hack', 1) then
 		TriggerClientEvent('QBCore:Notify', src, "You Lost Your Mansion Hacking Laptop", 'error')
 	end
 end)
