@@ -154,7 +154,7 @@ end
 
 local function lockpickFinish(success) 
 	if success then
-		TriggerServerEvent('md-houserobbery:server:enterHouse', closestHouse)
+		TriggerServerEvent('wtrp-houserobbery:server:enterHouse', closestHouse)
 		QBCore.Functions.Notify(Lang:t("success.worked"), "success", 2500)
 	else
 		if usingAdvanced then
@@ -214,7 +214,7 @@ local function searchCabin(cabin)
         TriggerServerEvent("evidence:server:CreateFingerDrop", pos)
     end
     LockpickDoorAnim()
-    TriggerServerEvent('md-houserobbery:server:SetBusyState', cabin, currentHouse, true)
+    TriggerServerEvent('wtrp-houserobbery:server:SetBusyState', cabin, currentHouse, true)
     FreezeEntityPosition(ped, true)
     IsLockpicking = true
     Skillbar.Start({
@@ -225,9 +225,9 @@ local function searchCabin(cabin)
         if SucceededAttempts + 1 >= NeededAttempts then
             openingDoor = false
             ClearPedTasks(PlayerPedId())
-            TriggerServerEvent('md-houserobbery:server:searchCabin', cabin, currentHouse)
+            TriggerServerEvent('wtrp-houserobbery:server:searchCabin', cabin, currentHouse)
             Config.Houses[currentHouse]["furniture"][cabin]["searched"] = true
-            TriggerServerEvent('md-houserobbery:server:SetBusyState', cabin, currentHouse, false)
+            TriggerServerEvent('wtrp-houserobbery:server:SetBusyState', cabin, currentHouse, false)
             SucceededAttempts = 0
             FreezeEntityPosition(ped, false)
             SetTimeout(500, function()
@@ -244,7 +244,7 @@ local function searchCabin(cabin)
     end, function()
         openingDoor = false
         ClearPedTasks(PlayerPedId())
-        TriggerServerEvent('md-houserobbery:server:SetBusyState', cabin, currentHouse, false)
+        TriggerServerEvent('wtrp-houserobbery:server:SetBusyState', cabin, currentHouse, false)
         QBCore.Functions.Notify(Lang:t("error.process_cancelled"), "error", 3500)
         SucceededAttempts = 0
         FreezeEntityPosition(ped, false)
@@ -257,12 +257,12 @@ end
 -- Events
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-    QBCore.Functions.TriggerCallback('md-houserobbery:server:GetHouseConfig', function(HouseConfig)
+    QBCore.Functions.TriggerCallback('wtrp-houserobbery:server:GetHouseConfig', function(HouseConfig)
         Config.Houses = HouseConfig
     end)
 end)
 
-RegisterNetEvent('md-houserobbery:client:ResetHouseState', function(house)
+RegisterNetEvent('wtrp-houserobbery:client:ResetHouseState', function(house)
     Config.Houses[house]["opened"] = false
     for k, v in pairs(Config.Houses[house]["furniture"]) do
         v["searched"] = false
@@ -273,35 +273,35 @@ RegisterNetEvent('police:SetCopCount', function(amount)
     CurrentCops = amount
 end)
 
-RegisterNetEvent('md-houserobbery:client:enterHouse', function(house)
+RegisterNetEvent('wtrp-houserobbery:client:enterHouse', function(house)
     enterRobberyHouse(house)
 end)
 
-RegisterNetEvent('md-houserobbery:client:setHouseState', function(house, state)
+RegisterNetEvent('wtrp-houserobbery:client:setHouseState', function(house, state)
     Config.Houses[house]["opened"] = state
 end)
 
-RegisterNetEvent('md-houserobbery:client:setCabinState', function(house, cabin, state)
+RegisterNetEvent('wtrp-houserobbery:client:setCabinState', function(house, cabin, state)
     Config.Houses[house]["furniture"][cabin]["searched"] = state
 end)
 
-RegisterNetEvent('md-houserobbery:client:SetBusyState', function(cabin, house, bool)
+RegisterNetEvent('wtrp-houserobbery:client:SetBusyState', function(cabin, house, bool)
     Config.Houses[house]["furniture"][cabin]["isBusy"] = bool
 end)
 
-RegisterNetEvent('md-houserobbery:client:househacking', function()
+RegisterNetEvent('wtrp-houserobbery:client:househacking', function()
     local hours = GetClockHours()
     if hours >= Config.MinimumTime or hours <= Config.MaximumTime then
         if closestHouse ~= nil then
             if Config.Houses[closestHouse]["tier"] == 1 or Config.Houses[closestHouse]["tier"] == 2 or Config.Houses[closestHouse]["tier"] == 3 or Config.Houses[closestHouse]["tier"] == 4 then
-                exports['ps-ui']:VarHack(function(success)
+                exports['ps-ui']:Circle (function(success)
                     if success then
                         if CurrentCops >= Config.MinimumHouseRobberyPolice then
                             if not Config.Houses[closestHouse]["opened"] then
                                     PoliceCall()
-                                    TriggerServerEvent('md-houserobbery:server:enterHouse', closestHouse)
-                                    TriggerServerEvent('md-houserobbery:server:removehousehacking')
-                                    if math.random(1, 100) <= 85 and not IsWearingHandshoes() then
+                                    TriggerServerEvent('wtrp-houserobbery:server:enterHouse', closestHouse)
+                                    TriggerServerEvent('wtrp-houserobbery:server:removehousehacking')
+                                    if math.random(100, 1000) <= 85 and not IsWearingHandshoes() then
                                         local pos = GetEntityCoords(PlayerPedId())
                                         TriggerServerEvent("evidence:server:CreateFingerDrop", pos)
                                     end
@@ -313,10 +313,10 @@ RegisterNetEvent('md-houserobbery:client:househacking', function()
                         end
                 else
                     if math.random(1,100) <= 15 then
-                        TriggerServerEvent('md-houserobbery:server:removehousehacking')
+                        TriggerServerEvent('wtrp-houserobbery:server:removehousehacking')
                     end
                 end
-                end, 3, 6)
+                end, 1, 1)
             elseif Config.Houses[closestHouse]["tier"] == 6 or Config.Houses[closestHouse]["tier"] == 4 or Config.Houses[closestHouse]["tier"] == 3 or Config.Houses[closestHouse]["tier"] == 2 or Config.Houses[closestHouse]["tier"] == 1  or closestHouse == nil then 
                 QBCore.Functions.Notify("cant use here", "error", 3500)
             end
@@ -326,7 +326,7 @@ RegisterNetEvent('md-houserobbery:client:househacking', function()
     end	
     end)
 
-RegisterNetEvent('md-houserobbery:client:househacking', function()
+RegisterNetEvent('wtrp-houserobbery:client:househacking', function()
 local hours = GetClockHours()
 if hours >= Config.MinimumTime or hours <= Config.MaximumTime then
 	if closestHouse ~= nil then
@@ -336,8 +336,8 @@ if hours >= Config.MinimumTime or hours <= Config.MaximumTime then
 					if CurrentCops >= Config.MinimumHouseRobberyPolice then
 						if not Config.Houses[closestHouse]["opened"] then
 								PoliceCall()
-								TriggerServerEvent('md-houserobbery:server:enterHouse', closestHouse)
-								TriggerServerEvent('md-houserobbery:server:removehousehacking')
+								TriggerServerEvent('wtrp-houserobbery:server:enterHouse', closestHouse)
+								TriggerServerEvent('wtrp-houserobbery:server:removehousehacking')
 								if math.random(1, 100) <= 85 and not IsWearingHandshoes() then
 									local pos = GetEntityCoords(PlayerPedId())
 									TriggerServerEvent("evidence:server:CreateFingerDrop", pos)
@@ -350,10 +350,10 @@ if hours >= Config.MinimumTime or hours <= Config.MaximumTime then
 					end
 			else
 				if math.random(1,100) <= 15 then
-					TriggerServerEvent('md-houserobbery:server:removehousehacking')
+					TriggerServerEvent('wtrp-houserobbery:server:removehousehacking')
 				end
 			end
-			end, 3, 6)
+			end, 5, 6)
 		elseif Config.Houses[closestHouse]["tier"] == 6 or Config.Houses[closestHouse]["tier"] == 4 or Config.Houses[closestHouse]["tier"] == 3 or Config.Houses[closestHouse]["tier"] == 2 or Config.Houses[closestHouse]["tier"] == 1  or closestHouse == nil then 
 			QBCore.Functions.Notify("cant use here", "error", 3500)
 		end
@@ -363,7 +363,7 @@ if hours >= Config.MinimumTime or hours <= Config.MaximumTime then
 end	
 end)
 
-RegisterNetEvent('md-houserobbery:client:mansionhacking', function()
+RegisterNetEvent('wtrp-houserobbery:client:mansionhacking', function()
 local hours = GetClockHours()
 if hours >= Config.MinimumTime or hours <= Config.MaximumTime then
 	if Config.Houses[closestHouse]["tier"] == 6 then
@@ -373,8 +373,8 @@ if hours >= Config.MinimumTime or hours <= Config.MaximumTime then
 					if CurrentCops >= Config.MinimumHouseRobberyPolice then
 						if not Config.Houses[closestHouse]["opened"] then
 								PoliceCall()
-								TriggerServerEvent('md-houserobbery:server:enterHouse', closestHouse)
-								TriggerServerEvent('md-houserobbery:server:removemansionhacking')
+								TriggerServerEvent('wtrp-houserobbery:server:enterHouse', closestHouse)
+								TriggerServerEvent('wtrp-houserobbery:server:removemansionhacking')
 								if math.random(1, 100) <= 85 and not IsWearingHandshoes() then
 								local pos = GetEntityCoords(PlayerPedId())
 								TriggerServerEvent("evidence:server:CreateFingerDrop", pos)
@@ -388,10 +388,10 @@ if hours >= Config.MinimumTime or hours <= Config.MaximumTime then
 				end
 			else
 				if math.random(1,100) <= 15 then
-					TriggerServerEvent('md-houserobbery:server:removemansionhacking')
+					TriggerServerEvent('wtrp-houserobbery:server:removemansionhacking')
 				end
 			end
-		    end, 3, 6)
+		    end, 6, 6)
 	end
 end	
 end)
